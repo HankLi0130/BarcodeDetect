@@ -4,11 +4,17 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.journeyapps.barcodescanner.CaptureManager
-import kotlinx.android.synthetic.main.activity_main.*
+import com.journeyapps.barcodescanner.DecoratedBarcodeView
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var viewBarcode: DecoratedBarcodeView
+    private lateinit var viewTorch: Button
+    private lateinit var viewScan: Button
+    private lateinit var viewResult: TextView
 
     private lateinit var captureManager: CaptureManager
     private var torchState: Boolean = false
@@ -17,23 +23,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        captureManager = CaptureManager(this, view_barcode)
+        viewBarcode = findViewById(R.id.view_barcode)
+        viewTorch = findViewById(R.id.view_torch)
+        viewScan = findViewById(R.id.view_scan)
+        viewResult = findViewById(R.id.view_result)
+
+        captureManager = CaptureManager(this, viewBarcode)
         captureManager.initializeFromIntent(intent, savedInstanceState)
 
-        view_scan.setOnClickListener {
-            view_result.text = "..."
-            view_barcode.decodeSingle { result ->
-                view_result.text = result.text
+        viewScan.setOnClickListener {
+            viewResult.text = "..."
+            viewBarcode.decodeSingle { result ->
+                viewResult.text = result.text
                 vibrate()
             }
         }
 
-        view_torch.setOnClickListener {
+        viewTorch.setOnClickListener {
             torchState = if (torchState) {
-                view_barcode.setTorchOff()
+                viewBarcode.setTorchOff()
                 false
             } else {
-                view_barcode.setTorchOn()
+                viewBarcode.setTorchOn()
                 true
             }
         }
